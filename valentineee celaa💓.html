@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Final 💌</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial,sans-serif; background: linear-gradient(135deg,#ff9a9e,#fad0c4); text-align:center; padding-top:40px; overflow:hidden; margin:0;}
+h1,h2,p{color:#fff;text-shadow:1px 1px 3px rgba(0,0,0,0.3);}
+button,input{padding:12px 20px;font-size:16px;border-radius:14px;border:none;margin:10px;cursor:pointer;}
+input{width:70%;max-width:250px;}
+#iyaa{background:#ff4d6d;color:white;transition: transform 0.2s;}
+#iyaa:hover{transform: scale(1.1);}
+#tidak{position:absolute;background:#eee;}
+
+/* HATI */
+.heart{position:fixed;top:-10px;font-size:20px;animation:jatuh linear forwards;}
+@keyframes jatuh{to{transform: translateY(110vh);opacity:0;}}
+
+/* Kotak hadiah */
+.kotak-wrapper{display:inline-block;margin:20px;position:relative;width:200px;height:200px;text-align:center;}
+.kotak-text{margin-top:10px;font-size:16px;color:#fff;}
+.kotak{position:relative;width:100%;height:100%;background: rgba(255,255,255,0.2);border:2px dashed #fff;border-radius:16px;cursor:pointer;overflow:hidden;transition: all 0.5s;}
+.kotak:hover{background: rgba(255,255,255,0.4);}
+.amplop{position:absolute;top:0;left:0;width:100%;height:100%;background:#ff4d6d;border-radius:16px;transform-origin:top;transition: transform 0.8s ease-in-out;}
+.amplop.buka{transform: rotateX(180deg) translateY(-20px) rotate(20deg);}
+.hadiah{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:22px;background: rgba(255,255,255,0.2);padding:10px 15px;border-radius:10px;transition: transform 0.5s ease;}
+.hadiah.muncul{transform:translate(-50%,-50%) scale(1);}
+
+/* Tombol musik tengah kiri */
+#musikBtn{
+  position: fixed;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  background: #ff4d6d;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  z-index: 10000;
+}
+</style>
+</head>
+<body>
+
+<div id="halamanAwal">
+<h1>happy Valentine sayanggkuu💓🥳</h1>
+<h2>Masukin nama kamu (nama wajib cela)</h2>
+<input id="nama" placeholder="Nama kamu">
+<br>
+<button id="mulaiBtn">Lanjut 💘</button>
+</div>
+
+<button id="musikBtn">🔈 Musik</button>
+
+<audio id="musik" loop>
+  <source src="13-lany.mp3" type="audio/mpeg">
+</audio>
+<audio id="pop" src="https://freesound.org/data/previews/341/341695_6247670-lq.mp3"></audio>
+<audio id="boom" src="https://freesound.org/data/previews/414/414209_5121236-lq.mp3"></audio>
+
+<div id="hadiahContainer"></div>
+
+<script>
+const musik=document.getElementById('musik');
+const musikBtn=document.getElementById('musikBtn');
+let playing=false;
+
+musikBtn.addEventListener('click',()=>{
+  if(!playing){ musik.play().catch(()=>alert("Klik layar dulu untuk play audio")); musikBtn.innerText="🔇 Mati"; playing=true; }
+  else { musik.pause(); musikBtn.innerText="🔈 Musik"; playing=false; }
+});
+
+function fullScreen(){ if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen(); } }
+
+document.getElementById("mulaiBtn").addEventListener("click",()=>{
+  const namaInput = document.getElementById("nama").value.trim().toLowerCase();
+  if(namaInput !== "cela"){ 
+      alert("ISII NAMA HARUS CELA WOIK, INI WEB KHUSUS BUAT CELA😡👿"); 
+      return; 
+  }
+  fullScreen();
+  musik.play().catch(()=>console.log("Klik layar dulu")); 
+  mulai();
+});
+
+function mulai(){
+  document.getElementById("halamanAwal").style.display="none";
+  const container=document.getElementById("hadiahContainer");
+  container.innerHTML=`
+    <h1>Mau hadiah Valentine tidaa?😆🥳</h1>
+    <button id="iyaa">MAUU 😍</button>
+    <button id="tidak">GA!😴</button>
+  `;
+
+  const btnTidak=container.querySelector("#tidak");
+  function kabur(){ 
+    const x=Math.random()*(window.innerWidth-120); 
+    const y=Math.random()*(window.innerHeight-60); 
+    btnTidak.style.left=x+"px"; 
+    btnTidak.style.top=y+"px"; 
+  }
+  btnTidak.addEventListener("mouseover",kabur);
+  btnTidak.addEventListener("touchstart",kabur);
+
+  setInterval(buatHati,300);
+  container.querySelector("#iyaa").addEventListener("click", hadiahKotak);
+}
+
+function hadiahKotak(){
+  const container=document.getElementById("hadiahContainer");
+  container.innerHTML = `
+    <h1>Pilih kotak hadiahnya 🎁</h1>
+    <div class="kotak-wrapper">
+      <div class="kotak" onclick="bukaKotak('🍫 Coklat',this)"><div class="amplop"></div><div class="hadiah"></div></div>
+      <div class="kotak-text">Kotak 1</div>
+    </div>
+    <div class="kotak-wrapper">
+      <div class="kotak" onclick="bukaKotak('🌹 Bunga',this)"><div class="amplop"></div><div class="hadiah"></div></div>
+      <div class="kotak-text">Kotak 2</div>
+    </div>
+  `;
+}
+
+function bukaKotak(hadiah,kotak){
+  document.querySelectorAll(".kotak").forEach(k=>k.onclick=null); 
+  const amplop = kotak.querySelector(".amplop");
+  const hadiahDiv = kotak.querySelector(".hadiah");
+  amplop.classList.add("buka");
+  hadiahDiv.innerText = hadiah;
+  hadiahDiv.classList.add("muncul");
+  document.getElementById("pop").play();
+
+  setTimeout(()=>{
+    document.getElementById("boom").play();
+    const container=document.getElementById("hadiahContainer");
+    container.innerHTML=`
+      <h1>${hadiah} keluar dari kotak! 💝</h1>
+      <p>YEYYYY DAPET HADIAHHH🎆🥳🩵😆</p>
+      <p>LANGSUNG SCREENSHOT YAA KIRIM KE ADITT, KAMU DAPET HADIAH APA❤️</p>
+      <button onclick="lanjutSLAP()">LANJUTTT!!➡️</button>
+    `;
+  },1000);
+}
+
+function lanjutSLAP(){
+  const container=document.getElementById("hadiahContainer");
+  container.innerHTML=`
+    <h1>UDAAA AH GA ADA APA😹</h1>
+    <p>btw nantii kitaa mainn yaaw😙(kalo ga ada halangan itu ge)</p>
+  `;
+}
+
+function buatHati(){
+  const hati=document.createElement("div");
+  hati.className="heart";
+  hati.innerText="❤️";
+  hati.style.left=Math.random()*100+"vw";
+  hati.style.animationDuration=(2+Math.random()*3)+"s";
+  document.body.appendChild(hati);
+  setTimeout(()=>{hati.remove();},5000);
+}
+</script>
+</body>
+</html>
